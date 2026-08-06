@@ -1,0 +1,14 @@
+{
+  "gamerule.whops.legacy.sneak_height": "Sneak Height",
+  "gamerule.whops.legacy.sprint_leniency": "Sprint Leniency",
+  "gamerule.whops.legacy.minimum_velocity": "Minimum Velocity",
+  "gamerule.whops.legacy.allow_swimming": "Allow Swimming",
+  "gamerule.whops.legacy.allow_sprint_sneak": "Allow Sprint Sneaking",
+  "gamerule.whops.legacy.allow_bounce_boost": "Allow Bounce Boosting",
+  "gamerule.whops.legacy.step_height_ledges": "Step Height-Based Ledges",
+  "gamerule.whops.legacy.xz_fix": "X/Z Fix",
+  "gamerule.whops.legacy.easy_climbing": "Easy climbing",
+  "gamerule.whops.legacy.allow_blip_up": "Allow Blip-up",
+  "key.category.whops.whops": "whops",
+  "key.whops.return": "Return to checkpoint"
+}

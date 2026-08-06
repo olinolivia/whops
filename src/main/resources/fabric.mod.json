@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "whops",
+	"version": "${version}",
+	"name": "whops",
+	"description": "An all-in-one dependency for your parkour maps!",
+	"authors": [
+		"olinolívia"
+	],
+	"contact": {
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/whops/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"olinolivia.whops.Whops"
+		],
+		"client": [
+			"olinolivia.whops.client.WhopsClient"
+		]
+	},
+	"mixins": [
+		"whops.mixins.json",
+		{
+			"config": "whops.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"accessWidener": "whops.classtweaker",
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
