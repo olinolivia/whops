@@ -19,8 +19,6 @@ import java.util.Set;
 
 public record WhopsCheckpoint(Vec3 pos, Vec2 rot) {
 
-    public static final WhopsCheckpoint DEFAULT = new WhopsCheckpoint(Vec3.ZERO, Vec2.ZERO);
-
     public static WhopsCheckpoint fromPlayer(ServerPlayer player) {
         return new WhopsCheckpoint(player.position(), new Vec2(player.getXRot(), player.getYRot()));
     }
@@ -49,7 +47,6 @@ public record WhopsCheckpoint(Vec3 pos, Vec2 rot) {
     public static final AttachmentType<WhopsCheckpoint> CHECKPOINT_ATTACHMENT = AttachmentRegistry.create(
             Whops.id("checkpoint"),
             builder -> builder
-                    .initializer(() -> DEFAULT)
                     .persistent(CODEC)
                     .syncWith(STREAM_CODEC, AttachmentSyncPredicate.targetOnly())
                     .copyOnDeath()

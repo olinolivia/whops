@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import olinolivia.whops.Whops;
 import olinolivia.whops.checkpoint.WhopsCheckpoint;
 import olinolivia.whops.client.checkpoint.ClientCheckpointHelper;
@@ -32,7 +33,7 @@ public class WhopsKeybinds {
                         WhopsCheckpoint checkpoint = player.getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT);
                         if (checkpoint != null) {
                             ClientCheckpointHelper.returnClient(player, checkpoint, false);
-                        }
+                        } else player.sendOverlayMessage(Component.literal("No checkpoint to return to!").withColor(0xFF5555));
                     }
                 }
         });

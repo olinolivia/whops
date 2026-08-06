@@ -13,8 +13,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.checkpoint.WhopsCheckpoint;
 
-import java.util.Objects;
-
 public class CheckpointCommand {
 
     public static final Command<CommandSourceStack> QUICK_SAVE = context -> {
@@ -40,10 +38,26 @@ public class CheckpointCommand {
         return 0;
     };
 
+    public static final Command<CommandSourceStack> CLEAR = context -> {
+        if (context.getSource().getEntityOrException() instanceof ServerPlayer player) {
+            player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, null);
+            context.getSource().sendSuccess(() -> Component.literal("Cleared checkpoint"), false);
+        } else {
+            context.getSource().sendFailure(Component.literal("You aren't a player!"));
+        }
+        return 0;
+    };
+
     public static final Command<CommandSourceStack> LOAD = context -> {
         if (context.getSource().getEntityOrException() instanceof ServerPlayer player) {
-            Objects.requireNonNull(player.getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT)).returnServer(player);
-            context.getSource().sendSuccess(() -> Component.literal("Loaded position from checkpoint"), false);
+            WhopsCheckpoint checkpoint = player.getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT);
+            if (checkpoint != null) {
+                checkpoint.returnServer(player);
+                context.getSource().sendSuccess(() -> Component.literal("Loaded position from checkpoint"), false);
+            }
+            else {
+                context.getSource().sendFailure(Component.literal("No checkpoint to return to!"));
+            }
         } else {
             context.getSource().sendFailure(Component.literal("You aren't a player!"));
         }
@@ -60,6 +74,10 @@ public class CheckpointCommand {
                                 .then(Commands.argument("rot", Vec2Argument.vec2())
                                 .executes(CUSTOM_SAVE)
                         )))
+                        .then(Commands.literal("clear")
+                                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR))
+                                .executes(CLEAR)
+                        )
                         .then(Commands.literal("load").executes(LOAD))
         ));
     }
