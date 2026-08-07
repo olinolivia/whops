@@ -38,13 +38,31 @@ public abstract class CourseCommand {
         }
         WorldCourseData courseData = WorldCourseData.get(context.getSource().getLevel());
         String courseName = player.getAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT);
-        if (courseName == null || !courseData.courseExists(courseName)) {
+        if (courseName == null) {
             context.getSource().sendFailure(Component.literal("You aren't in a course!"));
+            return 0;
+        }
+        if (!courseData.courseExists(courseName)) {
+            context.getSource().sendFailure(Component.literal("You aren't in a valid course!"));
             return 0;
         }
         WhopsCheckpoint checkpoint = courseData.getCourse(courseName).start();
         player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, checkpoint);
         checkpoint.returnServer(player);
+        return 0;
+    };
+
+    public static final Command<CommandSourceStack> LEAVE = context -> {
+        if (!(context.getSource().getEntityOrException() instanceof ServerPlayer player)) {
+            context.getSource().sendFailure(Component.literal("You aren't a player!"));
+            return 0;
+        }
+        String courseName = player.getAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT);
+        if (courseName == null) {
+            context.getSource().sendFailure(Component.literal("You aren't in a course!"));
+            return 0;
+        }
+        WhopsCourse.switchCourses(player, null);
         return 0;
     };
 
@@ -81,6 +99,7 @@ public abstract class CourseCommand {
                 dispatcher.register(Commands.literal("course")
                         .then(Commands.literal("play").then(Commands.argument("course", StringArgumentType.string()).suggests(new CourseSuggestionProvider()).executes(PLAY)))
                         .then(Commands.literal("restart").executes(RESTART))
+                        .then(Commands.literal("leave").executes(LEAVE))
                         .then(Commands.literal("create").requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR)).then(Commands.argument("course", StringArgumentType.string()).executes(CREATE)))
                         .then(Commands.literal("remove").requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR)).then(Commands.argument("course", StringArgumentType.string()).suggests(new CourseSuggestionProvider()).executes(REMOVE)))
                 )

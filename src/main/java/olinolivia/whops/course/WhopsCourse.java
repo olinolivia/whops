@@ -49,11 +49,11 @@ public record WhopsCourse(WhopsCheckpoint start) {
         CourseProgress previousProgress = CourseProgress.fromPlayer(player);
         Map<String, CourseProgress> previousWorldProgress = player.getAttachedOrCreate(CourseProgress.WORLD_PROGRESS_ATTACHMENT);
 
-        if (courseData.courseExists(previousCourseName)) {
+        if (previousCourseName != null && courseData.courseExists(previousCourseName)) {
             ImmutableMap.Builder<String, CourseProgress> newWorldProgress = new ImmutableMap.Builder<>();
             for (String cn : previousWorldProgress.keySet())
                 if (!cn.equals(previousCourseName)) newWorldProgress.put(cn, previousWorldProgress.get(cn));
-            if (previousCourseName != null) newWorldProgress.put(previousCourseName, previousProgress);
+            newWorldProgress.put(previousCourseName, previousProgress);
             player.setAttached(CourseProgress.WORLD_PROGRESS_ATTACHMENT, newWorldProgress.build());
         }
 
