@@ -5,6 +5,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.course.WhopsCheckpoint;
 import olinolivia.whops.networking.ServerboundReturnPayload;
+import olinolivia.whops.util.EffectHelper;
 
 public class ClientCheckpointHelper {
 
@@ -15,6 +16,7 @@ public class ClientCheckpointHelper {
         player.setOldPosAndRot();
         player.setDeltaMovement(Vec3.ZERO);
         ClientPlayNetworking.send(new ServerboundReturnPayload(onlysprintTriggered));
+        EffectHelper.applyEffectMap(checkpoint.effects(), player);
     }
 
 }

@@ -30,7 +30,7 @@ public class CheckpointCommand {
             Vec3 pos = Vec3Argument.getVec3(context, "pos");
             Vec2 rot = Vec2Argument.getVec2(context, "rot");
             //noinspection SuspiciousNameCombination
-            player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, new WhopsCheckpoint(pos, new Vec2(rot.y, rot.x), context.getSource().getLevel().dimension()));
+            player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, WhopsCheckpoint.fromPlayer(player, pos, new Vec2(rot.y, rot.x)));
             context.getSource().sendSuccess(() -> Component.literal("Saved position as checkpoint"), false);
         } else {
             context.getSource().sendFailure(Component.literal("You aren't a player!"));
