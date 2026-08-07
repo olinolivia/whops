@@ -1,7 +1,6 @@
 package olinolivia.whops.mixin;
 
 import com.google.common.collect.ImmutableList;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -10,7 +9,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import olinolivia.whops.Whops;
 import olinolivia.whops.gamerule.LegacyGameRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -76,7 +74,6 @@ public abstract class EntityMixin {
     @ModifyArg(method = "collide", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;<init>(DDD)V"))
     private double blipUp(double y, @Local(name = "movementStep") Vec3 movementStep) {
         Entity self = (Entity)(Object)this;
-        Whops.LOGGER.info(Double.toString(y));
         if (LegacyGameRules.get(self.level()).allowBlipUp() && y < -movementStep.y) return -movementStep.y;
         return y;
     }
