@@ -1,8 +1,8 @@
 package olinolivia.whops.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.world.level.Level;
 import olinolivia.whops.client.gamerule.ClientLegacyGameRuleTracker;
+import olinolivia.whops.client.gui.CoursesScreen;
 import olinolivia.whops.client.keybind.WhopsKeybinds;
 import olinolivia.whops.gamerule.LegacyGameRules;
 
@@ -15,6 +15,7 @@ public class WhopsClient implements ClientModInitializer {
 
 		ClientLegacyGameRuleTracker.init();
 		WhopsKeybinds.init();
+		CoursesScreen.init_();
 
 	}
 }

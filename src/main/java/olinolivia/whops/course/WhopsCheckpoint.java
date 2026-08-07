@@ -1,4 +1,4 @@
-package olinolivia.whops.checkpoint;
+package olinolivia.whops.course;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -56,10 +56,10 @@ public record WhopsCheckpoint(Vec3 pos, Vec2 rot) {
         ServerPlayNetworking.registerGlobalReceiver(ServerboundReturnPayload.TYPE, (_, context) -> {
             WhopsCheckpoint checkpoint = context.player().getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT);
             if (checkpoint != null) {
-            context.player().setPos(checkpoint.pos);
-            context.player().setXRot(checkpoint.rot.x);
-            context.player().setYRot(checkpoint.rot.y);
-            context.player().setDeltaMovement(Vec3.ZERO);
+                context.player().setPos(checkpoint.pos);
+                context.player().setXRot(checkpoint.rot.x);
+                context.player().setYRot(checkpoint.rot.y);
+                context.player().setDeltaMovement(Vec3.ZERO);
             }
         });
     }

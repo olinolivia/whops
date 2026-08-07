@@ -3,7 +3,8 @@
 	"package": "olinolivia.whops.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"ClientLocalPlayerMixin"
+		"ClientLocalPlayerMixin",
+		"ClientPauseScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

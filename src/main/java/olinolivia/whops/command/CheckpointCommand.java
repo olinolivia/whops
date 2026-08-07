@@ -11,7 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import olinolivia.whops.checkpoint.WhopsCheckpoint;
+import olinolivia.whops.course.WhopsCheckpoint;
 
 public class CheckpointCommand {
 
@@ -79,7 +79,8 @@ public class CheckpointCommand {
                                 .executes(CLEAR)
                         )
                         .then(Commands.literal("load").executes(LOAD))
-        ));
+                )
+        );
     }
 
     public static void init() {}

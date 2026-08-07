@@ -11,6 +11,9 @@ tools like plugins and datapacks.
 - A per-player checkpoint system, controllable with
   commands and with an instant, client-authoritative
   return keybind.
+- A course system that interfaces nicely with checkpoints
+  and persists across sessions as well as when switching
+  between courses.
 
 ## Usage
 
@@ -29,6 +32,11 @@ rotation (leave blank for current) to the calling player's
 checkpoint slot. You may return to this checkpoint by
 either calling `/checkpoint load` or by pressing the `return`
 keybind (configurable in controls)
+
+### Course system
+Courses can be managed and accessed using the `/course`
+command, as well as being easily reached from the Courses
+button seen at the bottom of the pause menu.
 
 ---
 

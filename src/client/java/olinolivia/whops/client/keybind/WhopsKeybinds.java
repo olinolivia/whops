@@ -7,8 +7,8 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import olinolivia.whops.Whops;
-import olinolivia.whops.checkpoint.WhopsCheckpoint;
-import olinolivia.whops.client.checkpoint.ClientCheckpointHelper;
+import olinolivia.whops.course.WhopsCheckpoint;
+import olinolivia.whops.client.course.ClientCheckpointHelper;
 
 public class WhopsKeybinds {
 
