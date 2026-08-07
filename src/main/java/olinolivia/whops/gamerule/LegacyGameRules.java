@@ -28,7 +28,8 @@ public record LegacyGameRules(
         boolean stepHeightLedges,
         boolean xzFix,
         boolean easyClimbing,
-        boolean allowBlipUp
+        boolean allowBlipUp,
+        boolean smartOnPosition
 ) {
     public static final StreamCodec<RegistryFriendlyByteBuf, LegacyGameRules> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.DOUBLE, LegacyGameRules::sneakHeight,
@@ -41,6 +42,7 @@ public record LegacyGameRules(
             ByteBufCodecs.BOOL, LegacyGameRules::xzFix,
             ByteBufCodecs.BOOL, LegacyGameRules::easyClimbing,
             ByteBufCodecs.BOOL, LegacyGameRules::allowBlipUp,
+            ByteBufCodecs.BOOL, LegacyGameRules::smartOnPosition,
             LegacyGameRules::new
     );
 
@@ -54,7 +56,8 @@ public record LegacyGameRules(
             true,
             true,
             true,
-            false
+            false,
+            true
     );
 
     public static final GameRule<Double> GAME_RULE_SNEAK_HEIGHT = numericLegacyGameRule("sneak_height", LegacyGameRules::sneakHeight);
@@ -67,6 +70,7 @@ public record LegacyGameRules(
     public static final GameRule<Boolean> GAME_RULE_XZ_FIX = booleanLegacyGameRule("xz_fix", LegacyGameRules::allowBounceBoost);
     public static final GameRule<Boolean> GAME_RULE_EASY_CLIMBING = booleanLegacyGameRule("easy_climbing", LegacyGameRules::allowBounceBoost);
     public static final GameRule<Boolean> GAME_RULE_ALLOW_BLIP_UP = booleanLegacyGameRule("allow_blip_up", LegacyGameRules::allowBounceBoost);
+    public static final GameRule<Boolean> GAME_RULE_SMART_ON_POSITION = booleanLegacyGameRule("smart_on_position", LegacyGameRules::allowBounceBoost);
 
     public static LegacyGameRules extract(MinecraftServer server) {
         GameRules gameRules = server.getGameRules();
@@ -80,7 +84,8 @@ public record LegacyGameRules(
                 gameRules.get(GAME_RULE_STEP_HEIGHT_LEDGES),
                 gameRules.get(GAME_RULE_XZ_FIX),
                 gameRules.get(GAME_RULE_EASY_CLIMBING),
-                gameRules.get(GAME_RULE_ALLOW_BLIP_UP)
+                gameRules.get(GAME_RULE_ALLOW_BLIP_UP),
+                gameRules.get(GAME_RULE_SMART_ON_POSITION)
         );
     }
 
@@ -95,6 +100,7 @@ public record LegacyGameRules(
         GameRuleEvents.changeCallback(GAME_RULE_XZ_FIX).register((ignored, server) -> syncToAll(server));
         GameRuleEvents.changeCallback(GAME_RULE_EASY_CLIMBING).register((ignored, server) -> syncToAll(server));
         GameRuleEvents.changeCallback(GAME_RULE_ALLOW_BLIP_UP).register((ignored, server) -> syncToAll(server));
+        GameRuleEvents.changeCallback(GAME_RULE_SMART_ON_POSITION).register((ignored, server) -> syncToAll(server));
 
         ServerPlayerEvents.JOIN.register(player -> sync(player.level().getServer(), player));
     }

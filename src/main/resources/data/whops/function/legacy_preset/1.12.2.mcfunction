@@ -9,3 +9,4 @@ gamerule whops:legacy/step_height_ledges true
 gamerule whops:legacy/xz_fix false
 gamerule whops:legacy/easy_climbing false
 gamerule whops:legacy/allow_blip_up true
+gamerule whops:legacy/smart_on_position false

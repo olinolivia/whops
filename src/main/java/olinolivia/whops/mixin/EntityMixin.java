@@ -2,6 +2,7 @@ package olinolivia.whops.mixin;
 
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
@@ -27,6 +29,8 @@ public abstract class EntityMixin {
         throw new UnsupportedOperationException("Implemented via mixin");
     }
 
+    @Shadow
+    private Level level;
     @Unique
     private static final ImmutableList<Direction.Axis> YXZ = ImmutableList.of(Direction.Axis.Y, Direction.Axis.X, Direction.Axis.Z);
 
@@ -82,6 +86,19 @@ public abstract class EntityMixin {
     private boolean blockSwim(boolean swimming) {
         Entity self = (Entity)(Object)this;
         return swimming && LegacyGameRules.get(self.level()).allowSwimming();
+    }
+
+    @Redirect(method = "checkSupportingBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;findSupportingBlock(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Ljava/util/Optional;"))
+    private Optional<BlockPos> dumbOnBlock(Level instance, Entity entity, AABB aabb) {
+        if (!LegacyGameRules.get(level).smartOnPosition()) {
+            BlockPos pos = new BlockPos(
+                    (int)(entity.position().x),
+                    (int)(entity.position().y() - 1.0e-6),
+                    (int)(entity.position().z)
+            );
+            return !level.getBlockState(pos).isAir() ? Optional.of(pos) : Optional.empty();
+        }
+        return instance.findSupportingBlock(entity, aabb);
     }
 
 }
