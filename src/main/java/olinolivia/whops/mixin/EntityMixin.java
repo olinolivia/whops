@@ -35,6 +35,11 @@ public abstract class EntityMixin {
     private static final ImmutableList<Direction.Axis> YXZ = ImmutableList.of(Direction.Axis.Y, Direction.Axis.X, Direction.Axis.Z);
 
     @Unique
+    private LegacyGameRules legacyRules() {
+        return LegacyGameRules.get(level);
+    }
+
+    @Unique
     private static Vec3 biasedCollideWithShapes(final Vec3 movement, final AABB boundingBox, final List<VoxelShape> shapes) {
         if (shapes.isEmpty()) {
             return movement;
@@ -63,29 +68,25 @@ public abstract class EntityMixin {
 
     @Redirect(method = "collide", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;collideBoundingBox(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Lnet/minecraft/world/level/Level;Ljava/util/List;)Lnet/minecraft/world/phys/Vec3;"))
     private Vec3 biasIfNoXZFix1(Entity source, Vec3 movement, AABB boundingBox, Level level, List<VoxelShape> entityColliders) {
-        Entity self = (Entity)(Object)this;
-        if (!LegacyGameRules.get(self.level()).xzFix()) return biasedCollideBoundingBox(source, movement, boundingBox, level, entityColliders);
+        if (!legacyRules().xzFix()) return biasedCollideBoundingBox(source, movement, boundingBox, level, entityColliders);
         return Entity.collideBoundingBox(source, movement, boundingBox, level, entityColliders);
     }
 
     @Redirect(method = "collide", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;collideWithShapes(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/List;)Lnet/minecraft/world/phys/Vec3;"))
     private Vec3 biasIfNoXZFix2(Vec3 movement, AABB boundingBox, List<VoxelShape> shapes) {
-        Entity self = (Entity)(Object)this;
-        if (!LegacyGameRules.get(self.level()).xzFix()) return biasedCollideWithShapes(movement, boundingBox, shapes);
+        if (!legacyRules().xzFix()) return biasedCollideWithShapes(movement, boundingBox, shapes);
         return collideWithShapes(movement, boundingBox, shapes);
     }
 
     @ModifyArg(method = "collide", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;<init>(DDD)V"))
     private double blipUp(double y, @Local(name = "movementStep") Vec3 movementStep) {
-        Entity self = (Entity)(Object)this;
-        if (LegacyGameRules.get(self.level()).allowBlipUp() && y < -movementStep.y) return -movementStep.y;
+        if (legacyRules().allowBlipUp() && y < -movementStep.y) return -movementStep.y;
         return y;
     }
 
     @ModifyArg(method = "updateSwimming", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setSwimming(Z)V"))
     private boolean blockSwim(boolean swimming) {
-        Entity self = (Entity)(Object)this;
-        return swimming && LegacyGameRules.get(self.level()).allowSwimming();
+        return swimming && legacyRules().allowSwimming();
     }
 
     @Redirect(method = "checkSupportingBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;findSupportingBlock(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Ljava/util/Optional;"))
