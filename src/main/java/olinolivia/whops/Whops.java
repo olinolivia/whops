@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import olinolivia.whops.command.CourseCommand;
 import olinolivia.whops.course.WhopsCheckpoint;
 import olinolivia.whops.command.CheckpointCommand;
+import olinolivia.whops.course.WhopsCourse;
 import olinolivia.whops.course.WorldCourseData;
 import olinolivia.whops.gamerule.LegacyGameRules;
 import olinolivia.whops.networking.*;
@@ -26,11 +27,13 @@ public class Whops implements ModInitializer {
 
 		ClientboundLegacyGameRulesPayload.init();
 		ClientboundListCoursesPayload.init();
+		ClientboundReplaceTimerPayload.init();
 		ServerboundPlayCoursePayload.init();
 		ServerboundRequestCoursesPayload.init();
 		ServerboundReturnPayload.init();
 		LegacyGameRules.init();
 		WhopsCheckpoint.init();
+		WhopsCourse.init();
 		WorldCourseData.init();
 		CheckpointCommand.init();
 		CourseCommand.init();

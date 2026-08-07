@@ -13,7 +13,7 @@ import java.util.Map;
 public record CourseProgress(WhopsCheckpoint checkpoint, long timeElapsed, boolean completed) {
 
     public static CourseProgress fromPlayer(ServerPlayer player) {
-        return new CourseProgress(player.getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT), 0, false);
+        return new CourseProgress(player.getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT), player.getAttachedOrCreate(WhopsCourse.TIMER_ATTACHMENT), false);
     }
 
     public static CourseProgress fromCourse(WhopsCourse course) {
