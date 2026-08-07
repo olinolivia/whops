@@ -28,7 +28,7 @@ public class CourseTimer {
         long hours = (timeElapsed / 72000);
         String text = (hours > 0 ? String.format("%02d:", hours) : "") + String.format("%02d:%02d.%03d", minutes, seconds, milliseconds);
 
-        graphics.text(minecraft.font, text, (graphics.guiWidth() - minecraft.font.width(text)) / 2, graphics.guiHeight() - minecraft.font.lineHeight - 64, 0xFFFFFFFF);
+        graphics.text(minecraft.font, text, (graphics.guiWidth() - minecraft.font.width(text)) / 2, graphics.guiHeight() - minecraft.font.lineHeight - 72, 0xFFFFFFFF);
     }
 
     static {
