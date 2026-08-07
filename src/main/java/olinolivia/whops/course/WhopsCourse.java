@@ -10,16 +10,28 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.Whops;
 import olinolivia.whops.networking.ClientboundReplaceTimerPayload;
+import olinolivia.whops.util.DimensionHelper;
+import olinolivia.whops.util.SerializationHelper;
 
 import java.util.Map;
 
-public record WhopsCourse(WhopsCheckpoint start) {
+public record WhopsCourse(Vec3 startPos, Vec2 startRot, ResourceKey<Level> startDimension) {
+
+    public static WhopsCourse fromPlayer(ServerPlayer player) {
+        return new WhopsCourse(player.position(), new Vec2(player.getXRot(), player.getYRot()), DimensionHelper.getDimension(player));
+    }
 
     public static final Codec<WhopsCourse> CODEC = RecordCodecBuilder.create(i -> i.group(
-            WhopsCheckpoint.CODEC.fieldOf("start").forGetter(WhopsCourse::start)
+            Vec3.CODEC.fieldOf("start_pos").forGetter(WhopsCourse::startPos),
+            Vec2.CODEC.fieldOf("start_rot").forGetter(WhopsCourse::startRot),
+            SerializationHelper.DIMENSION_CODEC.fieldOf("start_dimension").forGetter(WhopsCourse::startDimension)
     ).apply(i, WhopsCourse::new));
 
     public static final AttachmentType<String> CURRENT_COURSE_ATTACHMENT = AttachmentRegistry.create(

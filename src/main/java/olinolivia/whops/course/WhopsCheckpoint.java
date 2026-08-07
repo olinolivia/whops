@@ -7,40 +7,44 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.Whops;
 import olinolivia.whops.networking.ServerboundReturnPayload;
+import olinolivia.whops.util.DimensionHelper;
+import olinolivia.whops.util.SerializationHelper;
 
+import java.util.Objects;
 import java.util.Set;
 
-public record WhopsCheckpoint(Vec3 pos, Vec2 rot) {
+public record WhopsCheckpoint(Vec3 pos, Vec2 rot, ResourceKey<Level> dimension) {
 
     public static WhopsCheckpoint fromPlayer(ServerPlayer player) {
-        return new WhopsCheckpoint(player.position(), new Vec2(player.getXRot(), player.getYRot()));
+        return new WhopsCheckpoint(player.position(), new Vec2(player.getXRot(), player.getYRot()), DimensionHelper.getDimension(player));
+    }
+
+    public static WhopsCheckpoint fromCourse(WhopsCourse course) {
+        return new WhopsCheckpoint(course.startPos(), course.startRot(), course.startDimension());
     }
 
     public void returnServer(ServerPlayer player) {
-        player.teleportTo(player.level(), pos.x, pos.y, pos.z, Set.of(), rot.y, rot.x, true);
+        player.teleportTo(Objects.requireNonNull(player.level().getServer().getLevel(dimension)), pos.x, pos.y, pos.z, Set.of(), rot.y, rot.x, true);
     }
 
     public static final Codec<WhopsCheckpoint> CODEC = RecordCodecBuilder.create(i -> i.group(
             Vec3.CODEC.fieldOf("pos").forGetter(WhopsCheckpoint::pos),
-            Vec2.CODEC.fieldOf("rot").forGetter(WhopsCheckpoint::rot)
+            Vec2.CODEC.fieldOf("rot").forGetter(WhopsCheckpoint::rot),
+            SerializationHelper.DIMENSION_CODEC.fieldOf("dimension").forGetter(WhopsCheckpoint::dimension)
     ).apply(i, WhopsCheckpoint::new));
-
-    private static final StreamCodec<RegistryFriendlyByteBuf, Vec2> VEC2_STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.FLOAT, vec2 -> vec2.x,
-            ByteBufCodecs.FLOAT, vec2 -> vec2.y,
-            Vec2::new
-    );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, WhopsCheckpoint> STREAM_CODEC = StreamCodec.composite(
             Vec3.STREAM_CODEC, WhopsCheckpoint::pos,
-            VEC2_STREAM_CODEC, WhopsCheckpoint::rot,
+            SerializationHelper.VEC2_STREAM_CODEC, WhopsCheckpoint::rot,
+            SerializationHelper.DIMENSION_STREAM_CODEC, WhopsCheckpoint::dimension,
             WhopsCheckpoint::new
     );
 

@@ -17,7 +17,7 @@ public record CourseProgress(WhopsCheckpoint checkpoint, long timeElapsed, boole
     }
 
     public static CourseProgress fromCourse(WhopsCourse course) {
-        return new CourseProgress(course.start(), 0, false);
+        return new CourseProgress(WhopsCheckpoint.fromCourse(course), 0, false);
     }
 
     public static final Codec<CourseProgress> CODEC = RecordCodecBuilder.create(i -> i.group(

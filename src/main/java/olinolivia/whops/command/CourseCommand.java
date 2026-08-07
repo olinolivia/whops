@@ -46,7 +46,7 @@ public abstract class CourseCommand {
             context.getSource().sendFailure(Component.literal("You aren't in a valid course!"));
             return 0;
         }
-        WhopsCheckpoint checkpoint = courseData.getCourse(courseName).start();
+        WhopsCheckpoint checkpoint = WhopsCheckpoint.fromCourse(courseData.getCourse(courseName));
         player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, checkpoint);
         checkpoint.returnServer(player);
         return 0;
@@ -77,7 +77,7 @@ public abstract class CourseCommand {
             context.getSource().sendFailure(Component.literal("That is already a course!"));
             return 0;
         }
-        courseData.addCourse(courseName, new WhopsCourse(WhopsCheckpoint.fromPlayer(player)));
+        courseData.addCourse(courseName, WhopsCourse.fromPlayer(player));
         context.getSource().sendSuccess(() -> Component.literal("Created course " + courseName), true);
         return 0;
     };
