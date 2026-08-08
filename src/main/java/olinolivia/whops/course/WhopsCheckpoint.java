@@ -19,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.Whops;
+import olinolivia.whops.flag.WhopsFlags;
 import olinolivia.whops.networking.ServerboundReturnPayload;
 import olinolivia.whops.util.DimensionHelper;
 import olinolivia.whops.util.EffectHelper;
@@ -31,19 +32,20 @@ public record WhopsCheckpoint(
         Vec2 rot,
         ResourceKey<Level> dimension,
         Map<Holder<MobEffect>, MobEffectInstance> effects,
-        List<AttributeInstance.Packed> attributes
+        List<AttributeInstance.Packed> attributes,
+        WhopsFlags flags
 ) {
 
     public static WhopsCheckpoint fromPlayer(ServerPlayer player) {
-        return fromPlayer(player, player.position(), new Vec2(player.getXRot(), player.getYRot()));
+        return fromPlayer(player, player.position(), new Vec2(player.getXRot(), player.getYRot()), DimensionHelper.getDimension(player));
     }
 
-    public static WhopsCheckpoint fromPlayer(ServerPlayer player, Vec3 pos, Vec2 rot) {
-        return new WhopsCheckpoint(pos, rot, DimensionHelper.getDimension(player), EffectHelper.copyEffectMap(player.getActiveEffectsMap()), player.getAttributes().pack());
+    public static WhopsCheckpoint fromPlayer(ServerPlayer player, Vec3 pos, Vec2 rot, ResourceKey<Level> dimension) {
+        return new WhopsCheckpoint(pos, rot, dimension, EffectHelper.copyEffectMap(player.getActiveEffectsMap()), player.getAttributes().pack(), player.getAttachedOrCreate(WhopsFlags.FLAGS_ATTACHMENT));
     }
 
     public static WhopsCheckpoint fromCourse(WhopsCourse course) {
-        return new WhopsCheckpoint(course.startPos(), course.startRot(), course.startDimension(), Map.of(), List.of());
+        return new WhopsCheckpoint(course.startPos(), course.startRot(), course.startDimension(), Map.of(), List.of(), WhopsFlags.DEFAULT);
     }
 
     public void returnServer(ServerPlayer player) {
@@ -66,7 +68,8 @@ public record WhopsCheckpoint(
             Vec2.CODEC.fieldOf("rot").forGetter(WhopsCheckpoint::rot),
             SerializationHelper.DIMENSION_CODEC.fieldOf("dimension").forGetter(WhopsCheckpoint::dimension),
             SerializationHelper.EFFECTS_CODEC.fieldOf("effects").forGetter(WhopsCheckpoint::effects),
-            AttributeInstance.Packed.LIST_CODEC.fieldOf("attributes").forGetter(WhopsCheckpoint::attributes)
+            AttributeInstance.Packed.LIST_CODEC.fieldOf("attributes").forGetter(WhopsCheckpoint::attributes),
+            WhopsFlags.CODEC.fieldOf("flags").forGetter(WhopsCheckpoint::flags)
     ).apply(i, WhopsCheckpoint::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, WhopsCheckpoint> STREAM_CODEC = StreamCodec.composite(
@@ -75,6 +78,7 @@ public record WhopsCheckpoint(
             SerializationHelper.DIMENSION_STREAM_CODEC, WhopsCheckpoint::dimension,
             SerializationHelper.EFFECTS_STREAM_CODEC, WhopsCheckpoint::effects,
             ByteBufCodecs.fromCodec(AttributeInstance.Packed.LIST_CODEC), WhopsCheckpoint::attributes,
+            WhopsFlags.STREAM_CODEC, WhopsCheckpoint::flags,
             WhopsCheckpoint::new
     );
 

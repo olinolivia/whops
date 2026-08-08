@@ -6,11 +6,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import olinolivia.whops.flag.WhopsFlags;
 import olinolivia.whops.gamerule.LegacyGameRules;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
@@ -59,6 +61,11 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "handleRelativeFrictionAndCalculateMovement", at = @At("TAIL"))
     private void dontClimb2(Vec3 input, float friction, CallbackInfoReturnable<Vec3> cir) {
         if (!legacyRules().easyClimbing()) jumping = actuallyJumping;
+    }
+
+    @Inject(method = "jumpFromGround", at = @At("HEAD"), cancellable = true)
+    private void cancelJump(CallbackInfo ci) {
+        if (getAttachedOrCreate(WhopsFlags.FLAGS_ATTACHMENT).noJump()) ci.cancel();
     }
 
 }

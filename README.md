@@ -14,6 +14,7 @@ tools like plugins and datapacks.
 - A course system that interfaces nicely with checkpoints
   and persists across sessions as well as when switching
   between courses.
+- Challenge flags for onlysprint, nosprint, and nojump.
 
 ## Usage
 
@@ -37,6 +38,11 @@ keybind (configurable in controls)
 Courses can be managed and accessed using the `/course`
 command, as well as being easily reached from the Courses
 button seen at the bottom of the pause menu.
+
+### Challenge flags
+You may toggle any flags you want using `/flag`. Alongside
+attributes and status effects, they are tracked by and
+restored with checkpoints.
 
 ---
 

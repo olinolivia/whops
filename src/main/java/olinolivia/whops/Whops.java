@@ -6,6 +6,8 @@ import net.minecraft.resources.Identifier;
 
 import net.minecraft.server.level.ServerLevel;
 import olinolivia.whops.command.CourseCommand;
+import olinolivia.whops.command.FlagCommand;
+import olinolivia.whops.command.argument.FlagArgument;
 import olinolivia.whops.course.WhopsCheckpoint;
 import olinolivia.whops.command.CheckpointCommand;
 import olinolivia.whops.course.WhopsCourse;
@@ -35,8 +37,10 @@ public class Whops implements ModInitializer {
 		WhopsCheckpoint.init();
 		WhopsCourse.init();
 		WorldCourseData.init();
+		FlagArgument.init();
 		CheckpointCommand.init();
 		CourseCommand.init();
+		FlagCommand.init();
 
 	}
 
