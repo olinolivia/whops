@@ -10,10 +10,12 @@ import olinolivia.whops.Whops;
 
 import java.util.Map;
 
+import static olinolivia.whops.course.CourseHelper.*;
+
 public record CourseProgress(WhopsCheckpoint checkpoint, long timeElapsed, boolean completed) {
 
     public static CourseProgress fromPlayer(ServerPlayer player) {
-        return new CourseProgress(player.getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT), player.getAttachedOrCreate(WhopsCourse.TIMER_ATTACHMENT), false);
+        return new CourseProgress(getCheckpoint(player), getTimerServer(player), false);
     }
 
     public static CourseProgress fromCourse(WhopsCourse course) {

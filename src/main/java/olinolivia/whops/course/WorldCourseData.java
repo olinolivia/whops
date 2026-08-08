@@ -13,6 +13,8 @@ import olinolivia.whops.networking.ServerboundRequestCoursesPayload;
 import java.util.HashMap;
 import java.util.Map;
 
+import static olinolivia.whops.course.CourseHelper.*;
+
 public class WorldCourseData extends SavedData {
 
     private final HashMap<String, WhopsCourse> COURSES = new HashMap<>();
@@ -69,7 +71,7 @@ public class WorldCourseData extends SavedData {
         );
         ServerPlayNetworking.registerGlobalReceiver(ServerboundPlayCoursePayload.TYPE, ((payload, context) -> {
             WorldCourseData worldCourseData = WorldCourseData.get(context.player().level());
-            if (worldCourseData.courseExists(payload.courseName())) WhopsCourse.switchCourses(context.player(), payload.courseName());
+            if (worldCourseData.courseExists(payload.courseName())) switchCourses(context.player(), payload.courseName());
         }));
     }
 

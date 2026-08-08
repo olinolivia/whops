@@ -27,6 +27,8 @@ import olinolivia.whops.util.SerializationHelper;
 
 import java.util.*;
 
+import static olinolivia.whops.course.CourseHelper.*;
+
 public record WhopsCheckpoint(
         Vec3 pos,
         Vec2 rot,
@@ -93,7 +95,7 @@ public record WhopsCheckpoint(
     public static void init() {
         ServerPlayNetworking.registerGlobalReceiver(ServerboundReturnPayload.TYPE, (_, context) -> {
             ServerPlayer player = context.player();
-            WhopsCheckpoint checkpoint = player.getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT);
+            WhopsCheckpoint checkpoint = getCheckpoint(player);
             if (checkpoint != null) checkpoint.matchReturnServer(player);
         });
     }

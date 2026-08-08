@@ -1,6 +1,5 @@
 package olinolivia.whops.client.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +31,8 @@ public abstract class ClientLocalPlayerMixin extends Entity {
 
 	@ModifyArg(method = "canStartSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSprintingPossible(Z)Z"), index = 0)
 	private boolean allowShallowWaterSprint1OrBlockSprint(boolean original) {
-		return (original || !legacyRules().allowSwimming()) && !getAttachedOrCreate(WhopsFlags.FLAGS_ATTACHMENT).noSprint();
+		LocalPlayer self = (LocalPlayer)(Object)this;
+		return (original || !legacyRules().allowSwimming()) && !WhopsFlags.get(self).noSprint();
 	}
 
 	@ModifyArg(method = "shouldStopRunSprinting", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSprintingPossible(Z)Z"), index = 0)
@@ -43,17 +43,12 @@ public abstract class ClientLocalPlayerMixin extends Entity {
 	@ModifyReturnValue(method = "shouldStopRunSprinting", at = @At("RETURN"))
 	private boolean blockSprintSneakOrAllSprint(boolean original) {
 		LocalPlayer self = (LocalPlayer)(Object)this;
-		return original || (!legacyRules().allowSprintSneak() && self.isCrouching()) || getAttachedOrCreate(WhopsFlags.FLAGS_ATTACHMENT).noSprint();
+		return original || (!legacyRules().allowSprintSneak() && self.isCrouching()) || WhopsFlags.get(self).noSprint();
 	}
 
 	@ModifyReturnValue(method = "shouldStopSwimSprinting", at = @At("RETURN"))
 	private boolean disableSwim(boolean original) {
 		return original || !legacyRules().allowSwimming();
-	}
-
-	@ModifyExpressionValue(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;onGround()Z", ordinal = 0))
-	private boolean blockJump(boolean original) {
-		return original && !getAttachedOrCreate(WhopsFlags.FLAGS_ATTACHMENT).noJump();
 	}
 
 }

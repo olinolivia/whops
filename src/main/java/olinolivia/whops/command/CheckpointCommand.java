@@ -12,55 +12,45 @@ import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.course.WhopsCheckpoint;
+import olinolivia.whops.util.DimensionHelper;
+
+import static olinolivia.whops.command.CommandHelper.*;
+import static olinolivia.whops.course.CourseHelper.*;
 
 public class CheckpointCommand {
 
     public static final Command<CommandSourceStack> QUICK_SAVE = context -> {
-        if (context.getSource().getEntityOrException() instanceof ServerPlayer player) {
-            player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, WhopsCheckpoint.fromPlayer(player));
-            context.getSource().sendSuccess(() -> Component.literal("Saved position as checkpoint"), false);
-        } else {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
-        }
+        ServerPlayer player = getPlayer(context);
+        setCheckpoint(player, WhopsCheckpoint.fromPlayer(player));
+        context.getSource().sendSuccess(() -> Component.literal("Saved position as checkpoint"), false);
         return 0;
     };
 
     public static final Command<CommandSourceStack> CUSTOM_SAVE = context -> {
-        if (context.getSource().getEntityOrException() instanceof ServerPlayer player) {
-            Vec3 pos = Vec3Argument.getVec3(context, "pos");
-            Vec2 rot = Vec2Argument.getVec2(context, "rot");
-            //noinspection SuspiciousNameCombination
-            player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, WhopsCheckpoint.fromPlayer(player, pos, new Vec2(rot.y, rot.x), context.getSource().getLevel().dimension()));
-            context.getSource().sendSuccess(() -> Component.literal("Saved position as checkpoint"), false);
-        } else {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
-        }
+        ServerPlayer player = getPlayer(context);
+        Vec3 pos = Vec3Argument.getVec3(context, "pos");
+        Vec2 rot = Vec2Argument.getVec2(context, "rot");
+        //noinspection SuspiciousNameCombination
+        setCheckpoint(player, WhopsCheckpoint.fromPlayer(player, pos, new Vec2(rot.y, rot.x), DimensionHelper.getDimension(player)));
+        context.getSource().sendSuccess(() -> Component.literal("Saved position as checkpoint"), false);
         return 0;
     };
 
     public static final Command<CommandSourceStack> CLEAR = context -> {
-        if (context.getSource().getEntityOrException() instanceof ServerPlayer player) {
-            player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, null);
-            context.getSource().sendSuccess(() -> Component.literal("Cleared checkpoint"), false);
-        } else {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
-        }
+        ServerPlayer player = getPlayer(context);
+        setCheckpoint(player, null);
+        context.getSource().sendSuccess(() -> Component.literal("Cleared checkpoint"), false);
         return 0;
     };
 
     public static final Command<CommandSourceStack> LOAD = context -> {
-        if (context.getSource().getEntityOrException() instanceof ServerPlayer player) {
-            WhopsCheckpoint checkpoint = player.getAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT);
-            if (checkpoint != null) {
-                checkpoint.returnServer(player);
-                context.getSource().sendSuccess(() -> Component.literal("Loaded position from checkpoint"), false);
-            }
-            else {
-                context.getSource().sendFailure(Component.literal("No checkpoint to return to!"));
-            }
-        } else {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
+        ServerPlayer player = getPlayer(context);
+        WhopsCheckpoint checkpoint = getCheckpoint(player);
+        if (checkpoint != null) {
+            checkpoint.returnServer(player);
+            context.getSource().sendSuccess(() -> Component.literal("Loaded position from checkpoint"), false);
         }
+        else context.getSource().sendFailure(Component.literal("No checkpoint to return to!"));
         return 0;
     };
 

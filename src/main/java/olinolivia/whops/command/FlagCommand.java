@@ -11,17 +11,16 @@ import net.minecraft.server.permissions.Permissions;
 import olinolivia.whops.command.argument.FlagArgument;
 import olinolivia.whops.flag.WhopsFlags;
 
+import static olinolivia.whops.command.CommandHelper.*;
+
 public class FlagCommand {
 
     public static final Command<CommandSourceStack> SET = context -> {
-        if (!(context.getSource().getEntityOrException() instanceof ServerPlayer player)) {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
-            return 0;
-        }
+        ServerPlayer player = getPlayer(context);
         String flagName = context.getArgument("flag", String.class);
         boolean flagValue = BoolArgumentType.getBool(context, "value");
         try {
-            player.setAttached(WhopsFlags.FLAGS_ATTACHMENT, player.getAttachedOrCreate(WhopsFlags.FLAGS_ATTACHMENT).set(flagName, flagValue));
+            WhopsFlags.set(player, flagName, flagValue);
             context.getSource().sendSuccess(() -> Component.literal("Updated flag " + flagName + " to " + flagValue), true);
         } catch (NoSuchFieldException ignored) {
             context.getSource().sendFailure(Component.literal("That isn't a flag!"));

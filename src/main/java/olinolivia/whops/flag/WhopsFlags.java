@@ -8,7 +8,11 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import olinolivia.whops.Whops;
+
+import java.util.Arrays;
 
 public record WhopsFlags(
         boolean onlySprint,
@@ -28,13 +32,14 @@ public record WhopsFlags(
             "no_jump"
     };
 
-    public WhopsFlags set(String flagName, boolean value) throws NoSuchFieldException {
-        return switch (flagName) {
-            case "only_sprint" -> new WhopsFlags(value, noSprint, noJump);
-            case "no_sprint" -> new WhopsFlags(onlySprint, value, noJump);
-            case "no_jump" -> new WhopsFlags(onlySprint, noSprint, value);
-            default -> throw new NoSuchFieldException();
-        };
+    public static void set(ServerPlayer player, String flagName, boolean value) throws NoSuchFieldException {
+        if (!Arrays.stream(flagNames).toList().contains(flagName)) throw new NoSuchFieldException();
+        player.modifyAttached(FLAGS_ATTACHMENT, flags -> switch (flagName) {
+            case "only_sprint" -> new WhopsFlags(value, flags.noSprint, flags.noJump);
+            case "no_sprint" -> new WhopsFlags(flags.onlySprint, value, flags.noJump);
+            case "no_jump" -> new WhopsFlags(flags.onlySprint, flags.noSprint, value);
+            default -> flags;
+        });
     }
 
     public static final Codec<WhopsFlags> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -49,6 +54,10 @@ public record WhopsFlags(
             ByteBufCodecs.BOOL, WhopsFlags::noJump,
             WhopsFlags::new
     );
+
+    public static WhopsFlags get(Player player) {
+        return player.getAttached(FLAGS_ATTACHMENT);
+    }
 
     public static final AttachmentType<WhopsFlags> FLAGS_ATTACHMENT = AttachmentRegistry.create(
             Whops.id("flags"),

@@ -13,70 +13,44 @@ import olinolivia.whops.course.WhopsCheckpoint;
 import olinolivia.whops.course.WhopsCourse;
 import olinolivia.whops.course.WorldCourseData;
 
+import static olinolivia.whops.command.CommandHelper.*;
+import static olinolivia.whops.course.CourseHelper.*;
+
 public abstract class CourseCommand {
 
     public static final Command<CommandSourceStack> PLAY = context -> {
-        if (!(context.getSource().getEntityOrException() instanceof ServerPlayer player)) {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
-            return 0;
-        }
         String courseName = StringArgumentType.getString(context, "course");
         WorldCourseData courseData = WorldCourseData.get(context.getSource().getLevel());
-        if (!courseData.courseExists(courseName)) {
-            context.getSource().sendFailure(Component.literal("That isn't a course!"));
-            return 0;
-        }
-        WhopsCourse.switchCourses(player, courseName);
-        context.getSource().sendSuccess(() -> Component.literal("Now playing " + courseName), true);
+        if (!courseData.courseExists(courseName)) return error(context, "That isn't a course!");
+        switchCourses(getPlayer(context), courseName);
         return 0;
     };
 
     public static final Command<CommandSourceStack> RESTART = context -> {
-        if (!(context.getSource().getEntityOrException() instanceof ServerPlayer player)) {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
-            return 0;
-        }
         WorldCourseData courseData = WorldCourseData.get(context.getSource().getLevel());
-        String courseName = player.getAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT);
-        if (courseName == null) {
-            context.getSource().sendFailure(Component.literal("You aren't in a course!"));
-            return 0;
-        }
-        if (!courseData.courseExists(courseName)) {
-            context.getSource().sendFailure(Component.literal("You aren't in a valid course!"));
-            return 0;
-        }
+        ServerPlayer player = getPlayer(context);
+        String courseName = getCurrentCourseName(player);
+        if (courseName == null) return error(context, "You aren't in a course!");
+        if (!courseData.courseExists(courseName)) return error(context, "You aren't in a valid course!");
         WhopsCheckpoint checkpoint = WhopsCheckpoint.fromCourse(courseData.getCourse(courseName));
-        player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, checkpoint);
+        setCheckpoint(player, checkpoint);
         checkpoint.returnServer(player);
         return 0;
     };
 
     public static final Command<CommandSourceStack> LEAVE = context -> {
-        if (!(context.getSource().getEntityOrException() instanceof ServerPlayer player)) {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
-            return 0;
-        }
+        ServerPlayer player = getPlayer(context);
         String courseName = player.getAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT);
-        if (courseName == null) {
-            context.getSource().sendFailure(Component.literal("You aren't in a course!"));
-            return 0;
-        }
-        WhopsCourse.switchCourses(player, null);
+        if (courseName == null) return error(context, "You aren't in a course!");
+        switchCourses(player, null);
         return 0;
     };
 
     public static final Command<CommandSourceStack> CREATE = context -> {
-        if (!(context.getSource().getEntityOrException() instanceof ServerPlayer player)) {
-            context.getSource().sendFailure(Component.literal("You aren't a player!"));
-            return 0;
-        }
+        ServerPlayer player = getPlayer(context);
         String courseName = StringArgumentType.getString(context, "course");
         WorldCourseData courseData = WorldCourseData.get(context.getSource().getLevel());
-        if (courseData.courseExists(courseName)) {
-            context.getSource().sendFailure(Component.literal("That is already a course!"));
-            return 0;
-        }
+        if (courseData.courseExists(courseName)) return error(context, "That is already a course!");
         courseData.addCourse(courseName, WhopsCourse.fromPlayer(player));
         context.getSource().sendSuccess(() -> Component.literal("Created course " + courseName), true);
         return 0;
@@ -85,10 +59,7 @@ public abstract class CourseCommand {
     public static final Command<CommandSourceStack> REMOVE = context -> {
         String courseName = StringArgumentType.getString(context, "course");
         WorldCourseData courseData = WorldCourseData.get(context.getSource().getLevel());
-        if (!courseData.courseExists(courseName)) {
-            context.getSource().sendFailure(Component.literal("That isn't a course!"));
-            return 0;
-        }
+        if (!courseData.courseExists(courseName)) return error(context, "That isn't a course!");
         courseData.removeCourse(courseName);
         context.getSource().sendSuccess(() -> Component.literal("Removed course " + courseName), true);
         return 0;

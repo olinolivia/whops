@@ -1,6 +1,5 @@
 package olinolivia.whops.course;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -8,7 +7,6 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,11 +14,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.Whops;
-import olinolivia.whops.networking.ClientboundReplaceTimerPayload;
 import olinolivia.whops.util.DimensionHelper;
 import olinolivia.whops.util.SerializationHelper;
 
-import java.util.Map;
+import static olinolivia.whops.course.CourseHelper.*;
 
 public record WhopsCourse(Vec3 startPos, Vec2 startRot, ResourceKey<Level> startDimension) {
 
@@ -50,51 +47,14 @@ public record WhopsCourse(Vec3 startPos, Vec2 startRot, ResourceKey<Level> start
                     .copyOnDeath()
     );
 
-    public static boolean isInCourse(ServerPlayer player) {
-        String courseName = player.getAttached(CURRENT_COURSE_ATTACHMENT);
-        return courseName != null && WorldCourseData.get(player.level()).courseExists(courseName);
-    }
-
-    public static void switchCourses(ServerPlayer player, String newCourseName) {
-        WorldCourseData courseData = WorldCourseData.get(player.level());
-        String previousCourseName = player.getAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT);
-        CourseProgress previousProgress = CourseProgress.fromPlayer(player);
-        Map<String, CourseProgress> previousWorldProgress = player.getAttachedOrCreate(CourseProgress.WORLD_PROGRESS_ATTACHMENT);
-
-        if (previousCourseName != null && courseData.courseExists(previousCourseName)) {
-            ImmutableMap.Builder<String, CourseProgress> newWorldProgress = new ImmutableMap.Builder<>();
-            for (String cn : previousWorldProgress.keySet())
-                if (!cn.equals(previousCourseName)) newWorldProgress.put(cn, previousWorldProgress.get(cn));
-            newWorldProgress.put(previousCourseName, previousProgress);
-            player.setAttached(CourseProgress.WORLD_PROGRESS_ATTACHMENT, newWorldProgress.build());
-        }
-
-        if (newCourseName != null) {
-            player.setAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT, newCourseName);
-            CourseProgress newProgress = previousWorldProgress.get(newCourseName);
-            newProgress = newProgress != null ? newProgress : CourseProgress.fromCourse(courseData.getCourse(newCourseName));
-
-            player.setAttached(WhopsCheckpoint.CHECKPOINT_ATTACHMENT, newProgress.checkpoint());
-            player.setAttached(WhopsCourse.TIMER_ATTACHMENT, newProgress.timeElapsed());
-
-            newProgress.checkpoint().returnServer(player);
-            ServerPlayNetworking.send(player, new ClientboundReplaceTimerPayload(newProgress.timeElapsed()));
-        } else {
-            player.setAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT, null);
-        }
-
-    }
-
     static {
 
         ServerTickEvents.END_LEVEL_TICK.register(level -> {
-            for (ServerPlayer player : level.getPlayers(WhopsCourse::isInCourse))
-                player.setAttached(TIMER_ATTACHMENT, player.getAttachedOrCreate(TIMER_ATTACHMENT) + 1);
+            for (ServerPlayer player : level.getPlayers(CourseHelper::isInCourse)) incrementTimer(player);
         });
 
-        ServerPlayerEvents.JOIN.register(player ->
-                ServerPlayNetworking.send(player, new ClientboundReplaceTimerPayload(player.getAttachedOrCreate(TIMER_ATTACHMENT)))
-        );
+        // sync
+        ServerPlayerEvents.JOIN.register(player -> setTimer(player, getTimerServer(player)));
 
     }
 

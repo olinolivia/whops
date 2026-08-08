@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.flag.WhopsFlags;
@@ -65,7 +66,8 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "jumpFromGround", at = @At("HEAD"), cancellable = true)
     private void cancelJump(CallbackInfo ci) {
-        if (getAttachedOrCreate(WhopsFlags.FLAGS_ATTACHMENT).noJump()) ci.cancel();
+        LivingEntity self = (LivingEntity)(Object)this;
+        if (self instanceof Player player && WhopsFlags.get(player).noJump()) ci.cancel();
     }
 
 }
