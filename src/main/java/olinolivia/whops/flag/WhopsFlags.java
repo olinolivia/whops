@@ -56,7 +56,7 @@ public record WhopsFlags(
     );
 
     public static WhopsFlags get(Player player) {
-        return player.getAttached(FLAGS_ATTACHMENT);
+        return player.getAttachedOrCreate(FLAGS_ATTACHMENT);
     }
 
     public static final AttachmentType<WhopsFlags> FLAGS_ATTACHMENT = AttachmentRegistry.create(
