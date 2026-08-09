@@ -10,5 +10,10 @@
   "gamerule.whops.legacy.easy_climbing": "Easy climbing",
   "gamerule.whops.legacy.allow_blip_up": "Allow Blip-up",
   "key.category.whops.whops": "whops",
-  "key.whops.return": "Return to checkpoint"
+  "key.whops.return": "Return to checkpoint",
+  "block.whops.checkpoint": "Checkpoint",
+  "item.whops.checkpoint": "Checkpoint",
+  "item.whops.position_snapshot": "Position Snapshot",
+  "block.whops.goal": "Goal",
+  "item.whops.goal": "Goal"
 }

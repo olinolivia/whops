@@ -2,9 +2,13 @@ package olinolivia.whops.course;
 
 import com.google.common.collect.ImmutableMap;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.LevelData;
 import olinolivia.whops.networking.ClientboundReplaceTimerPayload;
+
+import java.util.Set;
 
 public abstract class CourseHelper {
 
@@ -28,6 +32,10 @@ public abstract class CourseHelper {
 
     public static long getTimerServer(ServerPlayer player) {
         return player.getAttachedOrCreate(WhopsCourse.TIMER_ATTACHMENT);
+    }
+
+    public static boolean isFinished(ServerPlayer player) {
+        return player.getAttachedOrCreate(WhopsCourse.FINISHED_ATTACHMENT);
     }
 
     // attachment modifiers
@@ -59,12 +67,17 @@ public abstract class CourseHelper {
         if (newCourseName != null && courseData.courseExists(newCourseName)) {
             player.setAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT, newCourseName);
             CourseProgress newProgress = getCourseProgress(player, newCourseName);
-            if (newProgress == null) newProgress = CourseProgress.fromCourse(courseData.getCourse(newCourseName));
+            if (newProgress == null) newProgress = CourseProgress.fromCourse(courseData.getCourse(newCourseName), false);
             setCheckpoint(player, newProgress.checkpoint());
             newProgress.checkpoint().returnServer(player);
             setTimer(player, newProgress.timeElapsed());
+            setFinished(player, newProgress.finished());
         } else {
             player.setAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT, null);
+            setCheckpoint(player, null);
+            LevelData.RespawnData respawnData = player.level().getRespawnData();
+            ServerLevel level = player.level().getServer().getLevel(respawnData.globalPos().dimension());
+            if (level != null) player.teleportTo(level, respawnData.pos().getX(), respawnData.pos().getY(), respawnData.pos().getZ(), Set.of(), respawnData.pitch(), respawnData.yaw(), true);
         }
 
     }
@@ -76,6 +89,10 @@ public abstract class CourseHelper {
 
     public static void incrementTimer(ServerPlayer player) {
         player.modifyAttached(WhopsCourse.TIMER_ATTACHMENT, timer -> timer+1);
+    }
+
+    public static void setFinished(ServerPlayer player, boolean finished) {
+        player.setAttached(WhopsCourse.FINISHED_ATTACHMENT, finished);
     }
 
     // misc

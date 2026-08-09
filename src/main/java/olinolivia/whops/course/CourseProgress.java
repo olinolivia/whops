@@ -12,20 +12,20 @@ import java.util.Map;
 
 import static olinolivia.whops.course.CourseHelper.*;
 
-public record CourseProgress(WhopsCheckpoint checkpoint, long timeElapsed, boolean completed) {
+public record CourseProgress(WhopsCheckpoint checkpoint, long timeElapsed, boolean finished) {
 
     public static CourseProgress fromPlayer(ServerPlayer player) {
-        return new CourseProgress(getCheckpoint(player), getTimerServer(player), false);
+        return new CourseProgress(getCheckpoint(player), getTimerServer(player), isFinished(player));
     }
 
-    public static CourseProgress fromCourse(WhopsCourse course) {
-        return new CourseProgress(WhopsCheckpoint.fromCourse(course), 0, false);
+    public static CourseProgress fromCourse(WhopsCourse course, boolean finished) {
+        return new CourseProgress(WhopsCheckpoint.fromCourse(course), 0, finished);
     }
 
     public static final Codec<CourseProgress> CODEC = RecordCodecBuilder.create(i -> i.group(
             WhopsCheckpoint.CODEC.fieldOf("checkpoint").forGetter(CourseProgress::checkpoint),
             Codec.LONG.fieldOf("time_elapsed").forGetter(CourseProgress::timeElapsed),
-            Codec.BOOL.fieldOf("completed").forGetter(CourseProgress::completed)
+            Codec.BOOL.fieldOf("finished").forGetter(CourseProgress::finished)
     ).apply(i, CourseProgress::new));
 
     public static final Codec<Map<String, CourseProgress>> WORLD_PROGRESS_CODEC = Codec.unboundedMap(Codec.STRING, CODEC);

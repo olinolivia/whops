@@ -1,7 +1,9 @@
 package olinolivia.whops.command;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.Vec2Argument;
@@ -12,6 +14,7 @@ import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import olinolivia.whops.course.WhopsCheckpoint;
+import olinolivia.whops.networking.ClientboundCheckpointFeedbackPayload;
 import olinolivia.whops.util.DimensionHelper;
 
 import static olinolivia.whops.command.CommandHelper.*;
@@ -30,8 +33,10 @@ public class CheckpointCommand {
         ServerPlayer player = getPlayer(context);
         Vec3 pos = Vec3Argument.getVec3(context, "pos");
         Vec2 rot = Vec2Argument.getVec2(context, "rot");
+        boolean feedback = BoolArgumentType.getBool(context, "feedback");
         //noinspection SuspiciousNameCombination
         setCheckpoint(player, WhopsCheckpoint.fromPlayer(player, pos, new Vec2(rot.y, rot.x), DimensionHelper.getDimension(player)));
+        if (feedback) ServerPlayNetworking.send(player, new ClientboundCheckpointFeedbackPayload(true));
         context.getSource().sendSuccess(() -> Component.literal("Saved position as checkpoint"), false);
         return 0;
     };
@@ -62,6 +67,7 @@ public class CheckpointCommand {
                                 .executes(QUICK_SAVE)
                                 .then(Commands.argument("pos", Vec3Argument.vec3())
                                 .then(Commands.argument("rot", Vec2Argument.vec2())
+                                .then(Commands.argument("feedback", BoolArgumentType.bool()))
                                 .executes(CUSTOM_SAVE)
                         )))
                         .then(Commands.literal("clear")

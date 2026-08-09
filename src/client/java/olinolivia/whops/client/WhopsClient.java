@@ -1,6 +1,7 @@
 package olinolivia.whops.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import olinolivia.whops.client.course.ClientCheckpointHelper;
 import olinolivia.whops.client.course.CourseTimer;
 import olinolivia.whops.client.flag.ClientFlagHelper;
 import olinolivia.whops.client.gamerule.ClientLegacyGameRuleTracker;
@@ -15,6 +16,7 @@ public class WhopsClient implements ClientModInitializer {
 
 		LegacyGameRules.setAccessor((_) -> ClientLegacyGameRuleTracker.legacyGameRules);
 
+		ClientCheckpointHelper.init();
 		CourseTimer.init();
 		ClientFlagHelper.init();
 		ClientLegacyGameRuleTracker.init();
@@ -22,4 +24,5 @@ public class WhopsClient implements ClientModInitializer {
 		CoursesScreen.init_();
 
 	}
+
 }

@@ -47,6 +47,14 @@ public record WhopsCourse(Vec3 startPos, Vec2 startRot, ResourceKey<Level> start
                     .copyOnDeath()
     );
 
+    public static final AttachmentType<Boolean> FINISHED_ATTACHMENT = AttachmentRegistry.create(
+            Whops.id("timer"),
+            builder -> builder
+                    .initializer(() -> false)
+                    .persistent(Codec.BOOL)
+                    .copyOnDeath()
+    );
+
     static {
 
         ServerTickEvents.END_LEVEL_TICK.register(level -> {
