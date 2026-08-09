@@ -37,6 +37,7 @@ public abstract class CourseCommand {
         WhopsCheckpoint checkpoint = WhopsCheckpoint.fromCourse(courseData.getCourse(courseName));
         setCheckpoint(player, checkpoint);
         checkpoint.returnServer(player);
+        setTimer(player, 0);
         return 0;
     };
 
