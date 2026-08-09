@@ -25,6 +25,7 @@ public abstract class WhopsCreativeTab {
             .displayItems(((params, output) -> {
                 output.accept(WhopsBlocks.CHECKPOINT_BLOCK.asItem());
                 output.accept(WhopsBlocks.GOAL_BLOCK.asItem());
+                output.accept(WhopsBlocks.COMMAND_PAD_BLOCK.asItem());
                 output.accept(WhopsItems.POSITION_SNAPSHOT);
             }))
             .build()

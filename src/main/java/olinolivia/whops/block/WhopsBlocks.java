@@ -44,6 +44,16 @@ public abstract class WhopsBlocks {
             new Item.Properties()
     );
 
+    public static final CommandPadBlock COMMAND_PAD_BLOCK = register(
+            "command_pad",
+            CommandPadBlock::new,
+            Properties.of()
+                    .destroyTime(-1)
+                    .mapColor(MapColor.DIRT)
+                    .noCollision(),
+            new Item.Properties()
+    );
+
     public static void init() {}
 
 }

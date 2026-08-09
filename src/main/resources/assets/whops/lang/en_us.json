@@ -15,5 +15,7 @@
   "item.whops.checkpoint": "Checkpoint",
   "item.whops.position_snapshot": "Position Snapshot",
   "block.whops.goal": "Goal",
-  "item.whops.goal": "Goal"
+  "item.whops.goal": "Goal",
+  "block.whops.command_pad": "Command Pad",
+  "item.whops.command_pad": "Command Pad"
 }

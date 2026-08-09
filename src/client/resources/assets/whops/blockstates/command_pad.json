@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "whops:block/command_pad"
+    }
+  }
+}

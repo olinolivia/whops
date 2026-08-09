@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 
 import net.minecraft.server.level.ServerLevel;
 import olinolivia.whops.block.WhopsBlocks;
+import olinolivia.whops.block.blockentity.CommandPadBlockEntity;
 import olinolivia.whops.block.blockentity.WhopsBlockEntities;
 import olinolivia.whops.command.CourseCommand;
 import olinolivia.whops.command.FlagCommand;
@@ -17,6 +18,7 @@ import olinolivia.whops.course.WhopsCourse;
 import olinolivia.whops.course.WorldCourseData;
 import olinolivia.whops.creative.WhopsCreativeTab;
 import olinolivia.whops.gamerule.LegacyGameRules;
+import olinolivia.whops.gui.BlockGUIOpener;
 import olinolivia.whops.item.WhopsItems;
 import olinolivia.whops.networking.*;
 import org.slf4j.Logger;
@@ -31,13 +33,16 @@ public class Whops implements ModInitializer {
 	public void onInitialize() {
 
 		LegacyGameRules.setAccessor(level -> level instanceof ServerLevel serverLevel ? LegacyGameRules.extract(serverLevel.getServer()) : null);
+		BlockGUIOpener.setCommandPadGUIOpener(_ -> {});
 
 		WhopsBlocks.init();
+		CommandPadBlockEntity.init();
 		WhopsBlockEntities.init();
 		ClientboundCheckpointFeedbackPayload.init();
 		ClientboundLegacyGameRulesPayload.init();
 		ClientboundListCoursesPayload.init();
 		ClientboundReplaceTimerPayload.init();
+		ServerboundEditCommandPadPayload.init();
 		ServerboundPlayCoursePayload.init();
 		ServerboundRequestCoursesPayload.init();
 		ServerboundReturnPayload.init();

@@ -22,6 +22,7 @@ public class WhopsBlockEntities {
     }
 
     public static final BlockEntityType<CheckpointBlockEntity> CHECKPOINT = register("checkpoint", CheckpointBlockEntity::new, WhopsBlocks.CHECKPOINT_BLOCK);
+    public static final BlockEntityType<CommandPadBlockEntity> COMMAND_PAD = register("command_pad", CommandPadBlockEntity::new, WhopsBlocks.COMMAND_PAD_BLOCK);
 
     public static void init() {}
 
