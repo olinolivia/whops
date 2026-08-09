@@ -48,7 +48,7 @@ public record WhopsCourse(Vec3 startPos, Vec2 startRot, ResourceKey<Level> start
     );
 
     public static final AttachmentType<Boolean> FINISHED_ATTACHMENT = AttachmentRegistry.create(
-            Whops.id("timer"),
+            Whops.id("finished"),
             builder -> builder
                     .initializer(() -> false)
                     .persistent(Codec.BOOL)
