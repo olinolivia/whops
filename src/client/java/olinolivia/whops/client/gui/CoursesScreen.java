@@ -1,27 +1,27 @@
 package olinolivia.whops.client.gui;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import olinolivia.whops.course.WhopsCourse;
+import olinolivia.whops.client.gui.widget.CourseSelectionList;
 import olinolivia.whops.networking.ClientboundListCoursesPayload;
 import olinolivia.whops.networking.ServerboundPlayCoursePayload;
 import olinolivia.whops.networking.ServerboundRequestCoursesPayload;
 import org.jspecify.annotations.NonNull;
 
+import static olinolivia.whops.course.CourseHelper.*;
+
 public class CoursesScreen extends Screen {
 
     private final Screen PARENT;
-    private Button[] courseButtons;
-    private int page = 0;
+    private CourseSelectionList courseList;
+    private Button playButton;
 
-    private Button previousPage;
-    private Button nextPage;
-
-    private static final int BUTTON_WIDTH = 250;
-    private static final int ROWS = 8;
+    private static final int CONTENT_WIDTH = 250;
+    private static final int CONTENT_HEIGHT = 250;
 
     public CoursesScreen(Screen parent) {
         super(Component.literal("Courses"));
@@ -30,51 +30,29 @@ public class CoursesScreen extends Screen {
 
     private static CoursesScreen waiting;
 
-    private Button playCourseButton(String courseName, int height) {
-        return Button.builder(Component.literal(courseName), _ -> {
-            ClientPlayNetworking.send(new ServerboundPlayCoursePayload(courseName));
-            minecraft.gui.setScreen(null);
-        }).bounds((width - BUTTON_WIDTH) / 2, this.height / 2 - ROWS * 10 + height * 20, BUTTON_WIDTH, 20).build();
-    }
-
     @Override
     protected void init() {
         waiting = this;
         ClientPlayNetworking.send(new ServerboundRequestCoursesPayload(true));
     }
 
-    private void updateLayout() {
-        for (Button courseButton : courseButtons) courseButton.visible = false;
-        for (int j = 0; j < ROWS; j++) {
-            if (page*ROWS+j < courseButtons.length) courseButtons[page*ROWS+j].visible = true;
-        }
-        previousPage.active = page > 0;
-        nextPage.active = (page+1) * ROWS < courseButtons.length;
-    }
-
     private void onReceiveCourseNames(String[] courseNames) {
         waiting = null;
-        assert minecraft.player != null;
-        courseButtons = new Button[courseNames.length];
-        int i = 0;
-        for (String courseName : courseNames) {
-            courseButtons[i] = playCourseButton(courseName, i % ROWS);
-            if (i >= ROWS) courseButtons[i].visible = false;
-            if (courseName.equals(minecraft.player.getAttached(WhopsCourse.CURRENT_COURSE_ATTACHMENT))) courseButtons[i].active = false;
-            i++;
-        }
-        previousPage = Button.builder(Component.literal("Previous"), _ -> {
-            page--;
-            updateLayout();
-        }).bounds((width - BUTTON_WIDTH) / 2 - 100, height / 2 - 10, 100, 20).build();
-        nextPage = Button.builder(Component.literal("Next"), _ -> {
-            page++;
-            updateLayout();
-        }).bounds((width + BUTTON_WIDTH) / 2, height / 2 - 10, 100, 20).build();
-        for (Button courseButton : courseButtons) addRenderableWidget(courseButton);
-        addRenderableWidget(previousPage);
-        addRenderableWidget(nextPage);
-        updateLayout();
+        courseList = new CourseSelectionList(minecraft, CONTENT_WIDTH, CONTENT_HEIGHT, (width - CONTENT_WIDTH) / 2, (height - CONTENT_HEIGHT) / 2, 16, courseNames);
+        playButton = Button.builder(Component.literal("Play"), _ -> {
+            minecraft.gui.setScreen(null);
+            waiting = null;
+            if (courseList.getSelected() != null) ClientPlayNetworking.send(new ServerboundPlayCoursePayload(courseList.getSelected().COURSE_NAME));
+        }).bounds((width - CONTENT_WIDTH) / 2, (height + CONTENT_HEIGHT) / 2, CONTENT_WIDTH, 20).build();
+        playButton.active = false;
+        addRenderableWidget(courseList);
+        addRenderableWidget(playButton);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (playButton != null && courseList != null) playButton.active = courseList.getSelected() != null && Minecraft.getInstance().player != null && !courseList.getSelected().COURSE_NAME.equals(getCurrentCourseName(Minecraft.getInstance().player));
     }
 
     @Override
@@ -89,7 +67,6 @@ public class CoursesScreen extends Screen {
     @Override
     public void onClose() {
         minecraft.gui.setScreen(PARENT);
-        waiting = null;
     }
 
     static {

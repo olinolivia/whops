@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.LevelData;
 import olinolivia.whops.networking.ClientboundReplaceTimerPayload;
 
+import java.util.Map;
 import java.util.Set;
 
 public abstract class CourseHelper {
@@ -41,12 +42,11 @@ public abstract class CourseHelper {
     // attachment modifiers
 
     public static void setCourseProgress(ServerPlayer player, String targetCourseName, CourseProgress progress) {
-        player.modifyAttached(CourseProgress.WORLD_PROGRESS_ATTACHMENT, map -> {
-            ImmutableMap.Builder<String, CourseProgress> newProgressBuilder = ImmutableMap.builder();
-            for (String courseName : map.keySet()) if (!courseName.equals(targetCourseName)) newProgressBuilder.put(courseName, map.get(courseName));
-            newProgressBuilder.put(targetCourseName, progress);
-            return newProgressBuilder.build();
-        });
+        Map<String, CourseProgress> previous = player.getAttachedOrCreate(CourseProgress.WORLD_PROGRESS_ATTACHMENT);
+        ImmutableMap.Builder<String, CourseProgress> newProgressBuilder = ImmutableMap.builder();
+        for (String courseName : previous.keySet()) if (!courseName.equals(targetCourseName)) newProgressBuilder.put(courseName, previous.get(courseName));
+        newProgressBuilder.put(targetCourseName, progress);
+        player.setAttached(CourseProgress.WORLD_PROGRESS_ATTACHMENT, newProgressBuilder.build());
     }
 
     public static void setCheckpoint(ServerPlayer player, WhopsCheckpoint checkpoint) {

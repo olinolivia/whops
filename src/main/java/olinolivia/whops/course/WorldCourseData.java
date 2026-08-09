@@ -44,7 +44,7 @@ public class WorldCourseData extends SavedData {
     }
 
     public String[] getCourseNames() {
-        return COURSES.keySet().toArray(new String[0]);
+        return COURSES.keySet().stream().sorted().toArray(String[]::new);
     }
 
     public boolean courseExists(String name) {
@@ -71,7 +71,7 @@ public class WorldCourseData extends SavedData {
         );
         ServerPlayNetworking.registerGlobalReceiver(ServerboundPlayCoursePayload.TYPE, ((payload, context) -> {
             WorldCourseData worldCourseData = WorldCourseData.get(context.player().level());
-            if (worldCourseData.courseExists(payload.courseName())) switchCourses(context.player(), payload.courseName());
+            if (worldCourseData.courseExists(payload.courseName()) && !payload.courseName().equals(getCurrentCourseName(context.player()))) switchCourses(context.player(), payload.courseName());
         }));
     }
 
