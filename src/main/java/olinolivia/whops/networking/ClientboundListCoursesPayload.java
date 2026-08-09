@@ -13,9 +13,9 @@ public record ClientboundListCoursesPayload(
         String courseNames
 ) implements CustomPacketPayload {
 
-    public static final Identifier LEGACY_SETTINGS_PAYLOAD_ID = Whops.id("list_courses");
+    public static final Identifier LIST_COURSES_PAYLOAD_ID = Whops.id("list_courses");
 
-    public static final Type<ClientboundListCoursesPayload> TYPE = new Type<>(LEGACY_SETTINGS_PAYLOAD_ID);
+    public static final Type<ClientboundListCoursesPayload> TYPE = new Type<>(LIST_COURSES_PAYLOAD_ID);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundListCoursesPayload> CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, ClientboundListCoursesPayload::courseNames,

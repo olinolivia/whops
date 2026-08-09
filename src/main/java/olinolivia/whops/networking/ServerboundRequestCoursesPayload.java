@@ -11,9 +11,9 @@ import org.jspecify.annotations.NonNull;
 
 public record ServerboundRequestCoursesPayload(boolean gui) implements CustomPacketPayload {
 
-    public static final Identifier PLAY_COURSE_PAYLOAD_ID = Whops.id( "play_course");
+    public static final Identifier REQUEST_COURSES_PAYLOAD_ID = Whops.id( "play_course");
 
-    public static final CustomPacketPayload.Type<ServerboundRequestCoursesPayload> TYPE = new CustomPacketPayload.Type<>(PLAY_COURSE_PAYLOAD_ID);
+    public static final CustomPacketPayload.Type<ServerboundRequestCoursesPayload> TYPE = new CustomPacketPayload.Type<>(REQUEST_COURSES_PAYLOAD_ID);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundRequestCoursesPayload> CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL, ServerboundRequestCoursesPayload::gui,

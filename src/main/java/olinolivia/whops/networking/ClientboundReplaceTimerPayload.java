@@ -13,9 +13,9 @@ public record ClientboundReplaceTimerPayload(
         long timer
 ) implements CustomPacketPayload {
 
-    public static final Identifier LEGACY_SETTINGS_PAYLOAD_ID = Whops.id("replace_timer");
+    public static final Identifier REPLACE_TIMER_PAYLOAD_ID = Whops.id("replace_timer");
 
-    public static final Type<ClientboundReplaceTimerPayload> TYPE = new Type<>(LEGACY_SETTINGS_PAYLOAD_ID);
+    public static final Type<ClientboundReplaceTimerPayload> TYPE = new Type<>(REPLACE_TIMER_PAYLOAD_ID);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundReplaceTimerPayload> CODEC = StreamCodec.composite(
             ByteBufCodecs.LONG, ClientboundReplaceTimerPayload::timer,
