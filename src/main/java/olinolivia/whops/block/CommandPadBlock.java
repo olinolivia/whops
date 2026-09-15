@@ -64,8 +64,6 @@ public class CommandPadBlock extends PadBlock implements EntityBlock {
                 new Vec2(steppingPlayer.getXRot(), steppingPlayer.getYRot()),
                 steppingPlayer.level(),
                 PermissionSet.ALL_PERMISSIONS,
-                steppingPlayer.getPlainTextName(),
-                steppingPlayer.getName(),
                 Objects.requireNonNull(level.getServer()),
                 steppingPlayer
         );

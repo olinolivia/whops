@@ -19,7 +19,7 @@ public class WhopsKeybinds {
     public static final KeyMapping RETURN_KEY = KeyMappingHelper.registerKeyMapping(
             new KeyMapping(
                     "key.whops.return",
-                    InputConstants.Type.KEYSYM,
+                    InputConstants.Type.KEYBOARD,
                     InputConstants.KEY_B,
                     CATEGORY
             )

@@ -36,7 +36,7 @@ public class CommandPadScreen extends AbstractCommandBlockEditScreen {
 
             @Override
             public @NonNull CommandSourceStack createCommandSourceStack(@NonNull ServerLevel level, @NonNull CommandSource source) {
-                return new CommandSourceStack(source, Vec3.atCenterOf(blockEntity.getBlockPos()), Vec2.ZERO, level, LevelBasedPermissionSet.GAMEMASTER, this.getName().getString(), this.getName(), level.getServer(), null);
+                return new CommandSourceStack(source, Vec3.atCenterOf(blockEntity.getBlockPos()), Vec2.ZERO, level, LevelBasedPermissionSet.GAMEMASTER, level.getServer(), null);
             }
 
             @Override
